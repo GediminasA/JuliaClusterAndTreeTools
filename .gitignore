@@ -1,0 +1,8 @@
+*.log
+*.swp
+*.jdl
+*REZ*.csv
+.vscode
+/*.fasta
+/*.csv
+quast_results

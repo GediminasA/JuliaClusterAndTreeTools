@@ -1,0 +1,6 @@
+[taxdump]
+git-tree-sha1 = "991a8be7feaa3b9885eee7c6657525943b6762f8"
+
+    [[taxdump.download]]
+    sha256 =  "e11a97f19946b3c5b5a97d6fb2a4a87f105a51a969f9fb43c995471c6e4add03"
+    url = "https://st16s-repo-bigfiles.s3.eu-central-1.amazonaws.com/ncbi_taxdump_asis_at_20201224/taxdump.tar.gz"
