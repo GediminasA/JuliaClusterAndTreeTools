@@ -1,4 +1,4 @@
-name = "st16SseqJuliaTools"
+name = "JuliaClusterAndTreeTools"
 uuid = "588df720-2ee6-48a1-913e-41e92462f556"
 authors = ["Gediminas Alzbutas <gediminas.alzbutas@thermofisher.com>", "KarolisM <karolismatjosaitis@gmail.com>"]
 version = "0.1.0"
