@@ -1,5 +1,5 @@
 
-def MAIN_DIR = "/mnt/jenkins/st16SseqJuliaTools"
+def MAIN_DIR = "/mnt/jenkins/JuliaClusterAndTreeTools"
 echo "RUNNING WITH PARAMS: ${params.WITH_PARAMS}"
 def BRANCH = ""
 
@@ -15,11 +15,11 @@ pipeline {
     agent {
         node {
             label 'master'
-            customWorkspace "${MAIN_DIR}/st16SseqJuliaTools_$BRANCH"
+            customWorkspace "${MAIN_DIR}/JuliaClusterAndTreeTools_$BRANCH"
         }
     }
     environment {
-        JULIA_DIR="${MAIN_DIR}/JULIA_st16SseqJuliaTools"
+        JULIA_DIR="${MAIN_DIR}/JULIA_JuliaClusterAndTreeTools"
         PATH_JULIA="$JULIA_DIR/julia-1.5.3/bin"
         PATH="$PATH_JULIA:$PATH"
         JULIA_PKGDIR="/mnt/jenkins/JULIA_PKGS"

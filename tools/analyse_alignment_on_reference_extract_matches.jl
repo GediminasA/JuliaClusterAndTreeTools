@@ -8,7 +8,7 @@ using FASTX
 using BioSequences
 using BioAlignments
 using ArgParse2
-using st16SseqJuliaTools
+using JuliaClusterAndTreeTools
 
 
 "Parse genus asignment - specific for fasta header"

@@ -2,7 +2,7 @@ module Testsanitise
     using Pkg
     Pkg.activate(".")
     using Test
-    using st16SseqJuliaTools
+    using JuliaClusterAndTreeTools
 
     #include("AlignmentMatrix.jl")
     include("UCparsing.jl")

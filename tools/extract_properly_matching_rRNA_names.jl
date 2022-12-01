@@ -1,5 +1,5 @@
 
-using st16SseqJuliaTools
+using JuliaClusterAndTreeTools
 using ArgParse
 using CSV
 using DataFrames

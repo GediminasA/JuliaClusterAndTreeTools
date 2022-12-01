@@ -6,7 +6,7 @@ using CodecZlib
 using BioAlignments
 using DataFramesMeta
 using Statistics
-using st16SseqJuliaTools
+using JuliaClusterAndTreeTools
 using XAM
 
 function main()

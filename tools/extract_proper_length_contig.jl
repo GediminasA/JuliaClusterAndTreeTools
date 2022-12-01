@@ -1,4 +1,4 @@
-using st16SseqJuliaTools
+using JuliaClusterAndTreeTools
 using ArgParse2
 using Statistics
 using DataStructures
@@ -30,7 +30,7 @@ function julia_main()::Cint
     help = "Turn on removal of contained sequences") 
     
     args = parse_args(parser)
-    seqs = st16SseqJuliaTools.fasta_to_dict(args.infasta)
+    seqs = JuliaClusterAndTreeTools.fasta_to_dict(args.infasta)
     lens = map(x -> length(x),collect(values(seqs)))
     llimit = args.length_cutoff*maximum(lens)
     seqs = sort(seqs, by = x -> length(seqs[x]),rev = true)
@@ -49,7 +49,7 @@ function julia_main()::Cint
         println(stderr,"Removed $dct sequences using length cutoff")
     end
     #len_filtered = filter(x -> len_sorted[x] >= llimit, len_sorted)
-    #st16SseqJuliaTools.dict_to_fasta(len_sorted,args.outfasta)
+    #JuliaClusterAndTreeTools.dict_to_fasta(len_sorted,args.outfasta)
     ks = collect(keys(seqs))
     len_ks = length(ks)
     out = OrderedDict{String,BioSequences.LongSequence{BioSequences.DNAAlphabet{4}}}()
@@ -78,7 +78,7 @@ function julia_main()::Cint
         end
         seqs = out 
     end 
-    st16SseqJuliaTools.dict_to_fasta(seqs,args.outfasta)
+    JuliaClusterAndTreeTools.dict_to_fasta(seqs,args.outfasta)
    return 0
 
 

@@ -4,14 +4,14 @@ using Test
 using DataFrames
 using CSV 
 #tes Alt parsing and repr update saving writing to fasta
-using st16SseqJuliaTools
+using JuliaClusterAndTreeTools
 
 primers = "/home/gediminas/working/primers/primers.fasta"
 db_file = "/home/gediminas/Desktop/tm/GRCh37_latest_rna.fna"
 
 
 
-#collect primer  st16SseqJuliaTools
+#collect primer  JuliaClusterAndTreeTools
 primer_inf = Array{Tuple{String,String},1}()
 reader = FASTA.Reader(open(primers, "r"))
 record = FASTA.Record()

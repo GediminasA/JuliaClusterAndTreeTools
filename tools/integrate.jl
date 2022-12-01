@@ -7,7 +7,7 @@ using CodecZlib
 using BioAlignments
 using DataFramesMeta
 using Statistics
-using st16SseqJuliaTools
+using JuliaClusterAndTreeTools
 using XAM
 using BioTools.BLAST
 using CSV

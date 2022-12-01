@@ -1,4 +1,4 @@
-using st16SseqJuliaTools
+using JuliaClusterAndTreeTools
 if abspath(PROGRAM_FILE) == @__FILE__
     map = read_jc_clusters(ARGS[1])
     sizes = Array{Tuple{String,Int64},1}()

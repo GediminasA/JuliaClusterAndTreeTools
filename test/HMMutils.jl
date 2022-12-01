@@ -1,5 +1,5 @@
 using Test
-using st16SseqJuliaTools
+using JuliaClusterAndTreeTools
 using Suppressor
 
 @testset "extract_properly_matching_rRNA_names" begin

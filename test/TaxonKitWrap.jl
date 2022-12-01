@@ -1,4 +1,4 @@
-using st16SseqJuliaTools
+using JuliaClusterAndTreeTools
 using Artifacts
 using Test
 @testset "taxonkit" begin

@@ -1,5 +1,5 @@
 using Test
-using st16SseqJuliaTools
+using JuliaClusterAndTreeTools
 using Suppressor
 using DataStructures
 

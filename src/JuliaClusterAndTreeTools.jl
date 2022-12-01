@@ -1,5 +1,5 @@
 __precompile__() 
-module st16SseqJuliaTools
+module JuliaClusterAndTreeTools
     using Statistics
     using StatsBase 
     using FastaIO
@@ -11,7 +11,6 @@ module st16SseqJuliaTools
     using FASTX
     using JLD2
     using Distributions
-    using BioTools.BLAST
     using IntervalSets
     using ProgressMeter
     using Artifacts
@@ -28,12 +27,6 @@ module st16SseqJuliaTools
     export aln_conservatio
     export eval_recomb
 
-    #Export BLAST parsing 
-    export split_by_query
-    export add_new_interval
-    export covered_length
-    export unique_length_fraction
-    export get_coverage_maximising_hits
 
     #Export TaxonKitWrap
     export taxid_to_species
@@ -58,7 +51,6 @@ module st16SseqJuliaTools
 
 
     include("utils.jl"	)
-    include("BLASTparsing.jl")
     include("TaxonKitWrap.jl")
     include("HMMutils.jl")
     include("UCparsing.jl")
