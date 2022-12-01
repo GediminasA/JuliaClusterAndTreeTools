@@ -4,7 +4,7 @@
     tar -xvzf julia-1.8.3-linux-x86_64.tar.gz
     sudo cp -r julia-1.5.2 /opt/
     sudo ln -s /opt/julia-1.5.2/bin/julia /usr/local/bin/julia
-    rm julia-1.5.2-linux-x86_64.tar.gz
+    rm julia-1.8.3-linux-x86_64.tar.gz
 ```
 2. setup required julia environment :
 ```bash
