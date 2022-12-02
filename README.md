@@ -6,7 +6,7 @@
     sudo ln -s /opt/julia-1.8.3/bin/julia /usr/local/bin/julia
     rm julia-1.8.3-linux-x86_64.tar.gz
 ```
-2. setup required julia environment :
+2. Setup required julia environment :
 ```bash
    cd scripts/julia_modules/st16SseqJuliaTools
    ./setup.sh 
