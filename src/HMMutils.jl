@@ -32,7 +32,6 @@ function extract_rRNA_names(names_file::String, r16s::String, t16s::String, minl
                 re = parse(Int64, parts[10])
                 ts, te = sort([ts, te])
                 rs, re = sort([rs, re])
-
                 if ((re-rs+1) >= minl) && (ts >= t_star) && (ts <= t_end) && (te >= t_star) && (te <= t_end) && (rs >= r_star) && (rs <= r_end) && (re >= r_star) && (re <= r_end)
                     println(namesf, rname)
                     push!(chosen_reads, rname)

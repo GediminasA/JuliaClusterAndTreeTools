@@ -8,6 +8,7 @@ module JuliaClusterAndTreeTools
     using DataFrames
     using Conda
     using BioSequences
+    using BioSymbols
     using FASTX
     using JLD2
     using Distributions

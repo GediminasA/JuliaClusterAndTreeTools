@@ -1,11 +1,11 @@
 
 mutable struct Alignment
     names::Array{String,1} # sequence names
-    M::Array{Char,2}
+    M::Array{DNA,2}
     repr_n:: Array{Int32,1} #number of epresentated species/sequiences - used for
     name_sequence_map:: Dict{String,Int32}
 
-    function Alignment(namesini::Array{String,1}, M::Array{Char,2})
+    function Alignment(namesini::Array{String,1}, M::Array{DNA,2})
         repr_n = fill(Int32(1), size(M,1))
         names = fill("", size(M,1))
         for i in eachindex(namesini)
@@ -16,7 +16,7 @@ mutable struct Alignment
         return Alignment(names, M, repr_n)
     end
 
-    function Alignment(names::Array{String,1}, M::Array{Char,2}, repr_n::Array{Int32,1})
+    function Alignment(names::Array{String,1}, M::Array{DNA,2}, repr_n::Array{Int32,1})
         name_sequence_map = Dict{String,Int32}()
         for i in eachindex(names)
             name_sequence_map[names[i]] = i
@@ -63,10 +63,12 @@ mutable struct Alignment
         end
         len = maximum(lengths)
         #create alignment array
-        m=fill('-', num, len)
+        m=fill(DNA_Gap, num, len)
         for i in 1:num
-            m[i,1:length(sequences[i])] = collect(sequences[i])
+            m[i,1:length(sequences[i])] = collect(BioSequences.LongDNASeq(sequences[i])) 
+            sequences[i]=Base.undef_ref_str
         end
+        sequence = nothing
         println(stderr)
         println(stderr, "Reading alignment finished, $skiped sequences were skipped due to atypical symbols")
         println(stderr)
