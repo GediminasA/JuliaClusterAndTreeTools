@@ -53,7 +53,7 @@ mutable struct Alignment
                     continue
                 end
                 num += 1
-                if mod(num, 10) == 0
+                if mod(num, 1000) == 0
                     print(stderr,"Parsed $num sequences \r")
                 end
                 push!(names, n)
