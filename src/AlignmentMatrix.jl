@@ -11,7 +11,11 @@ mutable struct Alignment
         for i in eachindex(namesini)
             parts = split(namesini[i], ";")
             names[i] = parts[1]
-            repr_n[i] = parse(Int32, split(parts[2], "=")[2])
+            if length(parts) > 1
+                repr_n[i] = parse(Int32, split(parts[2], "=")[2])
+            else
+                repr_n[i] = 1
+            end
         end
         return Alignment(names, M, repr_n)
     end
