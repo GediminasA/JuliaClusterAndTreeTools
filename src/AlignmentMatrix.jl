@@ -136,9 +136,63 @@ function write_to_fasta(aln::Alignment, interval::UnitRange{Int64}, out_f_name::
     close(f)
 end
 
- """
+"""
+    Collect data on Gaps and Ns abundance collumnwise
+"""
+function get_statistics_on_Gaps_Ns_collumnwise(aln::Alignment)
+    m = aln.M
+    set_dna = [DNA_N,DNA_Gap]
+    out = Array{Array{Int64},1}()
+    ctparse = 0
+    for clm in eachcol(m)
+        cm = countmap(clm)
+        N = length(clm)
+        cmvals =  map( (x) -> x in keys(cm) ? cm[x] : 0, set_dna)
+        push!(cmvals,N)
+        push!(out,cmvals)
+        ctparse += 1
+        if mod(ctparse,1000) == 0
+            print("Counted $ctparse columns\r")
+        end
+    end
+    println("Doing transposition...")
+    outm = transpose(hcat(out...))
+    println("Done. Converting to a data frame...")
+    outd = DataFrame(outm,[:N,:Gap,:Total])
+    outd.Position = 1:length(outm[:,1])
+    println("Done")
+    return(outd)
+end
+
+"""
+    Collect data on Gaps and Ns abundance rowwise
+"""
+function get_statistics_on_Gaps_Ns_rowwise(aln::Alignment)
+    m = aln.M
+    set_dna = [DNA_N,DNA_Gap]
+    out = Array{Array{Int64},1}()
+    ctparse = 0
+    for clm in eachrow(m)
+        cm = countmap(clm)
+        N = length(clm)
+        cmvals =  map( (x) -> x in keys(cm) ? cm[x] : 0, set_dna)
+        push!(cmvals,N)
+        push!(out,cmvals)
+        ctparse += 1
+        if mod(ctparse,1000) == 0
+            print("Counted $ctparse rows\r")
+        end
+    end
+    println("Doing transposition...")
+    outm = transpose(hcat(out...))
+    println("Done. Converting to a data frame...")
+    outd = DataFrame(outm,[:N,:Gap,:Total])
+    outd.ID=aln.names
+    return(outd)
+end
+"""
  Cluster a reagion in an alignemnt and replace custered fragments with a cluster representative
- """
+"""
 function vsearh_cluster!(aln::Alignment, interval::UnitRange{Int64}, id::Float64)
     #create temorary file in dev/shm
     bindir = Conda.bin_dir(:vsearch)
