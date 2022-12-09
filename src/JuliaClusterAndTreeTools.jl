@@ -22,6 +22,7 @@ module JuliaClusterAndTreeTools
     export read_fasta
     export write_to_fasta
     export sub_alignment
+    export sub_alignment!
     export vsearh_cluster!
     export get_max_cl_length
     export char_array_entropy 

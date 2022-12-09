@@ -38,9 +38,11 @@ mutable struct Alignment
         println(stderr, "Reading aligment $file_name\n")
         FastaReader(file_name) do fr
             for (n, seq) in fr
-                seq = uppercase(seq)
+                seq_ar::Vector{Char} = collect(uppercase(seq))
                 proper = true
-                for s in seq
+                ct = 0
+                for s in seq_ar
+                    ct += 1
                     proper = false
                     for sa in allowed_symbols
                         if s == sa
@@ -49,20 +51,17 @@ mutable struct Alignment
                         end
                     end
                     if !proper
-                        break
+                        seq_ar[ct] = 'N'
                     end
                 end
-                if !proper
-                    skiped += 1
-                    continue
-                end
+                seq_str = join(seq_ar)
                 num += 1
                 if mod(num, 1000) == 0
                     print(stderr,"Parsed $num sequences \r")
                 end
                 push!(names, n)
-                push!(sequences, seq)
-                push!(lengths, length(seq))
+                push!(sequences, seq_str)
+                push!(lengths, length(seq_str))
             end
         end
         len = maximum(lengths)
@@ -72,10 +71,7 @@ mutable struct Alignment
             m[i,1:length(sequences[i])] = collect(BioSequences.LongDNASeq(sequences[i])) 
             sequences[i]=Base.undef_ref_str
         end
-        sequence = nothing
-        println(stderr)
-        println(stderr, "Reading alignment finished, $skiped sequences were skipped due to atypical symbols")
-        println(stderr)
+        sequences = nothing
         return Alignment(names, m)
     end
 end
@@ -90,6 +86,11 @@ function sub_alignment(aln::Alignment, interval::UnitRange{Int64})
         mout[i,:] = min[i, interval]
     end
     return(Alignment(names, mout, repr_n))
+end
+
+#sub alignment  - column slice
+function sub_alignment!(aln::Alignment, interval::UnitRange{Int64})
+    aln.M=aln.M[:,interval]
 end
 
 #sub alignment  - subset on particular names
@@ -108,14 +109,26 @@ function sub_alignment(aln::Alignment, names::Array{String,1})
     return(Alignment(new_names, new_M, new_repr_n))
 end
 
+#sub alignment  - leaves on rows based on iondex
+function sub_alignment!(aln::Alignment, rows::Array{Int64,1})
+    aln.names = aln.names[rows]
+    aln.repr_n = aln.repr_n[rows]
+    aln.M = aln.M[rows,:]
+    aln.name_sequence_map = Dict(zip(aln.names,1:length(aln.names)))
+end
 
-function write_to_fasta(aln::Alignment, out_f_name::String)
+
+function write_to_fasta(aln::Alignment, out_f_name::String;write_sizes = false)
     f = open(out_f_name,"w")
     for i in 1:size(aln.M, 1)
         n = aln.names[i]
         rn = aln.repr_n[i]
-        outn = "$n;size=$rn"
-        s = String(aln.M[i,:])
+        if write_sizes
+            outn = "$n;size=$rn"
+        else
+            outn = "$n"
+        end
+        s = join(aln.M[i,:])
         print(f, ">$outn\n$s\n")
     end
     close(f)
@@ -187,7 +200,8 @@ function get_statistics_on_Gaps_Ns_rowwise(aln::Alignment)
     outm = transpose(hcat(out...))
     println("Done. Converting to a data frame...")
     outd = DataFrame(outm,[:N,:Gap,:Total])
-    outd.ID=aln.names
+    outd.ID = aln.names
+    outd.NR = 1:length(aln.names)
     return(outd)
 end
 """

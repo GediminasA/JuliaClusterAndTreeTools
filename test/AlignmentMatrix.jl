@@ -4,12 +4,12 @@ using JuliaClusterAndTreeTools
 
 using CSV
 using BioSymbols
+using BioSequences
 
 test_aln = "test/playdata/test500.fasta"
-alm = JuliaClusterAndTreeTools.Alignment(test_aln) 
-using BioSequences
-aa  = "AAAAAAAAAAAAAAAA"
-bb = collect(BioSequences.LongDNASeq("AAAAAAAAa"))
+test_alnout = "test/playdata/test500.fasta"
+alm = JuliaClusterAndTreeTools.Alignment(test_aln)
+JuliaClusterAndTreeTools.write_to_fasta(alm, test_alnout)
 alm.M[1,6]
 # @testset "AlignmentMatrix" begin
 #     aln = Alignment("test/playdata/sample.fasta")
