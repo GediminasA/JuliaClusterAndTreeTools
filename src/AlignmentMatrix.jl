@@ -109,17 +109,47 @@ function sub_alignment(aln::Alignment, names::Array{String,1})
     return(Alignment(new_names, new_M, new_repr_n))
 end
 
+#sub alignment  - subset on particular names
+function sub_alignment!(aln::Alignment, names::Array{String,1})
+    new_names = Array{String,1}() # sequence names
+    new_repr_n = Array{Int32,1}() 
+    ct = 0
+    for n in names 
+        ct += 1
+        ind = aln.name_sequence_map[n]
+        push!(new_names, aln.names[ind])
+        push!(new_repr_n, aln.repr_n[ind])
+    end 
+    keep_indexes = [ aln.name_sequence_map[n] for n in names]
+    aln.M = aln.M[keep_indexes,:]
+    aln.names  = new_names
+    aln.repr_n = new_repr_n
+    aln.name_sequence_map = Dict{String,Int32}()
+    for i in eachindex(aln.names)
+        aln.name_sequence_map[aln.names[i]] = i
+    end
+ end
+
 #sub alignment  - leaves on rows based on iondex
-function sub_alignment!(aln::Alignment, rows::Array{Int64,1})
+function sub_alignment_rowwise!(aln::Alignment, rows::Array{Int64,1})
     aln.names = aln.names[rows]
     aln.repr_n = aln.repr_n[rows]
     aln.M = aln.M[rows,:]
     aln.name_sequence_map = Dict(zip(aln.names,1:length(aln.names)))
+    aln.name_sequence_map = Dict{String,Int32}()
+    for i in eachindex(aln.names)
+        aln.name_sequence_map[aln.names[i]] = i
+    end
+end
+
+#sub alignment  - column slice
+function sub_alignment_columnwise!(aln::Alignment, columns::Array{Int64,1})
+    aln.M=aln.M[:,columns]
 end
 
 
 function write_to_fasta(aln::Alignment, out_f_name::String;write_sizes = false)
-    f = open(out_f_name,"w")
+    f = GZip.open(out_f_name,"w")
     for i in 1:size(aln.M, 1)
         n = aln.names[i]
         rn = aln.repr_n[i]
@@ -129,7 +159,7 @@ function write_to_fasta(aln::Alignment, out_f_name::String;write_sizes = false)
             outn = "$n"
         end
         s = join(aln.M[i,:])
-        print(f, ">$outn\n$s\n")
+        write(f, ">$outn\n$s\n")
     end
     close(f)
 end

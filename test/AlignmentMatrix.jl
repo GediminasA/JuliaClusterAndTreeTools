@@ -1,5 +1,6 @@
 
 #tes Alt parsing and repr update saving writing to fasta
+using Revise
 using JuliaClusterAndTreeTools
 
 using CSV
@@ -7,10 +8,15 @@ using BioSymbols
 using BioSequences
 
 test_aln = "test/playdata/test500.fasta"
-test_alnout = "test/playdata/test500.fasta"
+test_alnout = "test/playdata/test500out.fasta"
 alm = JuliaClusterAndTreeTools.Alignment(test_aln)
 JuliaClusterAndTreeTools.write_to_fasta(alm, test_alnout)
 alm.M[1,6]
+size(alm.M)
+ids = ["Sweden/1309418/2022", "England/PLYM-38B44C2/2022"]
+sub_alignment!(alm,ids)
+size(alm.M)
+#sub_alignment_columnwise!(alm,[1,2,1])
 # @testset "AlignmentMatrix" begin
 #     aln = Alignment("test/playdata/sample.fasta")
 #     @test aln.repr_n == [3196, 2454, 2280, 1676, 1425, 1340, 1183, 1018, 696, 663, 280, 251, 208, 203, 76, 66, 65, 43, 32, 32, 28, 28, 20, 20, 15, 12, 10, 8, 8, 8, 7, 5, 4, 4, 4, 4, 4, 4]

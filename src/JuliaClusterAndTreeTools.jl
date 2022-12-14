@@ -16,6 +16,7 @@ module JuliaClusterAndTreeTools
     using ProgressMeter
     using Artifacts
     using BioAlignments
+    using GZip
 
     #Alignment analysis stuff 
     export Alignment
@@ -23,6 +24,8 @@ module JuliaClusterAndTreeTools
     export write_to_fasta
     export sub_alignment
     export sub_alignment!
+    export sub_alignment_rowwise!
+    export sub_alignment_columnwise!
     export vsearh_cluster!
     export get_max_cl_length
     export char_array_entropy 
