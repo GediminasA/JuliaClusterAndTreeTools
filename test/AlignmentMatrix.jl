@@ -11,11 +11,13 @@ test_aln = "test/playdata/test500.fasta"
 test_alnout = "test/playdata/test500out.fasta"
 alm = JuliaClusterAndTreeTools.Alignment(test_aln)
 JuliaClusterAndTreeTools.write_to_fasta(alm, test_alnout)
-alm.M[1,6]
-size(alm.M)
-ids = ["Sweden/1309418/2022", "England/PLYM-38B44C2/2022"]
-sub_alignment!(alm,ids)
-size(alm.M)
+aln_conservation(alm)
+#char_array_entropy("AAAAAAAAAAAAAAAAAAAAAAAB")
+# alm.M[1,6]
+# size(alm.M)
+# ids = ["Sweden/1309418/2022", "England/PLYM-38B44C2/2022"]
+# sub_alignment!(alm,ids)
+# size(alm.M)
 #sub_alignment_columnwise!(alm,[1,2,1])
 # @testset "AlignmentMatrix" begin
 #     aln = Alignment("test/playdata/sample.fasta")

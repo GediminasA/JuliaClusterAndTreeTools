@@ -8,7 +8,7 @@ mutable struct Alignment
     function Alignment(namesini::Array{String,1}, M::Array{DNA,2})
         repr_n = fill(Int32(1), size(M,1))
         names = fill("", size(M,1))
-        for i in eachindex(namesini)
+        Threads.@threads for i in eachindex(namesini)
             parts = split(namesini[i], ";")
             names[i] = parts[1]
             if length(parts) > 1
@@ -335,25 +335,26 @@ function char_array_entropy(s::Array{Char,1};debug=false)
     n = length(s)
     e=0
     consensus = ' '
-    ct_gap = 0
     for k in keys(c)
     p = c[k]/n
     e += -1*p*log2(p)
     end
     frac_gap = c['-']/n
-    s = (2-e)-(2*frac_gap)
     if debug
-        println((2-e), " ", frac_gap)
+        println((e, " ", frac_gap))
     end
-    consensus = sort(collect(c), by=x->x[2])[1][1]
-    return(s, frac_gap,consensus)
+    consensus = sort(collect(c), by=x->-x[2])
+    vals = map((x) -> x[2][1], consensus)
+    pvals = maximum(vals)/sum(vals)
+    return(e, frac_gap, pvals, consensus[1][1])
 end
 
 function aln_conservation(aln::Alignment; ignore_amounts = false)
     entropies = Array{Float64,1}()
+    conservation = Array{Float64,1}()
     sz = size(aln.M)
     for i in 1:sz[2]
-        chars = aln.M[:,i]
+        chars = collect(join(aln.M[:,i]))
         cnts = aln.repr_n
         if ignore_amounts 
             entr = char_array_entropy(chars)
@@ -361,8 +362,9 @@ function aln_conservation(aln::Alignment; ignore_amounts = false)
             entr = char_array_entropy(chars, Array{Int64,1}(cnts))
         end 
         push!(entropies,entr[1])
+        push!(conservation,entr[3])
     end
-    return(entropies)
+    return(entropies, conservation)
 end
 
 "Identfies sequences which are recombinations of others and has no unique snps"

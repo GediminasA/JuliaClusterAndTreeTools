@@ -29,7 +29,7 @@ module JuliaClusterAndTreeTools
     export vsearh_cluster!
     export get_max_cl_length
     export char_array_entropy 
-    export aln_conservatio
+    export aln_conservation
     export eval_recomb
 
 
