@@ -6,3 +6,9 @@
 /*.fasta
 /*.csv
 quast_results
+notebooks/.ipynb_checkpoints/*
+notebooks/.ipynb_checkpoints
+.ipynb_checkpoints/*
+.ipynb_checkpoints
+notebooks/my-out.fasta
+test/playdata/test500out.fasta
