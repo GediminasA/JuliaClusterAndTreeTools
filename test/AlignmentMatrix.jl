@@ -12,7 +12,16 @@ test_alnout = "test/playdata/test500out.fasta"
 alm = JuliaClusterAndTreeTools.Alignment(test_aln)
 JuliaClusterAndTreeTools.write_to_fasta(alm, test_alnout)
 aln_conservation(alm)
-#char_array_entropy("AAAAAAAAAAAAAAAAAAAAAAAB")
+
+###protein 
+test_aln_prot = "test/playdata/proteinaln.fasta.gz"
+aln = JuliaClusterAndTreeTools.Alignmentprot(test_aln_prot) 
+cns = JuliaClusterAndTreeTools.aln_conservation(aln, ignore=['X'])
+#print(aln.M)
+
+
+char_array_entropy("AAAAAAAAAAAAAAAAAAAAAAAN")
+char_array_entropy("AAAAAAAAAAAAAAAAAAAAAAAN"; ignore = ['X'])
 # alm.M[1,6]
 # size(alm.M)
 # ids = ["Sweden/1309418/2022", "England/PLYM-38B44C2/2022"]

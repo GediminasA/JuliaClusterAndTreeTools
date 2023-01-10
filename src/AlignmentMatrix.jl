@@ -1,4 +1,81 @@
 
+mutable struct Alignmentprot
+    names::Array{String,1} # sequence names
+    M::Array{AminoAcid,2}
+    repr_n:: Array{Int32,1} #number of epresentated species/sequiences - used for
+    name_sequence_map:: Dict{String,Int32}
+
+    function Alignmentprot(namesini::Array{String,1}, M::Array{AminoAcid,2})
+        repr_n = fill(Int32(1), size(M,1))
+        names = fill("", size(M,1))
+        Threads.@threads for i in eachindex(namesini)
+            parts = split(namesini[i], ";")
+            names[i] = parts[1]
+            if length(parts) > 1
+                repr_n[i] = parse(Int32, split(parts[2], "=")[2])
+            else
+                repr_n[i] = 1
+            end
+        end
+        return Alignmentprot(names, M, repr_n)
+    end
+
+    function Alignmentprot(names::Array{String,1}, M::Array{AminoAcid,2}, repr_n::Array{Int32,1})
+        name_sequence_map = Dict{String,Int32}()
+        for i in eachindex(names)
+            name_sequence_map[names[i]] = i
+        end
+        return new(names, M, repr_n, name_sequence_map)
+    end
+
+    #primary=true  when the initial alignment is beeing read in (as a reference)
+    function  Alignmentprot(file_name::String, allowed_symbols::Set{Char}=Set{Char}(['W', 'S', 'A', 'Q', 'P', 'I', 'D', 'G', 'F', 'N', 'V', 'R', 'E', 'T', 'K', 'M', '-', 'H', 'C', '*', 'Y', 'L', 'N']))::Alignmentprot
+        sequences = Array{String,1}()
+        names = Array{String,1}()
+        num = 0
+        lengths = Array{Int32,1}()
+        skiped = 0
+        println(stderr, "Reading aligment $file_name\n")
+        FastaReader(file_name) do fr
+            for (n, seq) in fr
+                seq_ar::Vector{Char} = collect(uppercase(seq))
+                proper = true
+                ct = 0
+                for s in seq_ar
+                    ct += 1
+                    proper = false
+                    for sa in allowed_symbols
+                        if s == sa
+                            proper = true
+                            break
+                        end
+                    end
+                    if !proper
+                        seq_ar[ct] = 'X'
+                    end
+                end
+                seq_str = join(seq_ar)
+                num += 1
+                if mod(num, 1000) == 0
+                    print(stderr,"Parsed $num sequences \r")
+                end
+                push!(names, n)
+                push!(sequences, seq_str)
+                push!(lengths, length(seq_str))
+            end
+        end
+        len = maximum(lengths)
+        #create alignment array
+        m=fill(AA_Gap, num, len)
+        for i in 1:num
+            m[i,1:length(sequences[i])] = collect(BioSequences.LongAminoAcidSeq(sequences[i])) 
+            sequences[i]=Base.undef_ref_str
+        end
+        sequences = nothing
+        return Alignmentprot(names, m)
+    end
+end
+
 mutable struct Alignment
     names::Array{String,1} # sequence names
     M::Array{DNA,2}
@@ -77,7 +154,7 @@ mutable struct Alignment
 end
 
 #sub alignment  - column slice
-function sub_alignment(aln::Alignment, interval::UnitRange{Int64})
+function sub_alignment(aln::Union{Alignment, Alignmentprot}, interval::UnitRange{Int64})
     names = aln.names
     repr_n = aln.repr_n
     min = aln.M
@@ -89,12 +166,12 @@ function sub_alignment(aln::Alignment, interval::UnitRange{Int64})
 end
 
 #sub alignment  - column slice
-function sub_alignment!(aln::Alignment, interval::UnitRange{Int64})
+function sub_alignment!(aln::Union{Alignment, Alignmentprot}, interval::UnitRange{Int64})
     aln.M=aln.M[:,interval]
 end
 
 #sub alignment  - subset on particular names
-function sub_alignment(aln::Alignment, names::Array{String,1})
+function sub_alignment(aln::Union{Alignment, Alignmentprot}, names::Array{String,1})
     new_names = Array{String,1}() # sequence names
     new_M = Array{Char}(undef, length(names), size(aln.M)[2])
     new_repr_n = Array{Int32,1}() #number of epresentated species/sequiences - used for
@@ -110,7 +187,7 @@ function sub_alignment(aln::Alignment, names::Array{String,1})
 end
 
 #sub alignment  - subset on particular names
-function sub_alignment!(aln::Alignment, names::Array{String,1})
+function sub_alignment!(aln::Union{Alignment, Alignmentprot}, names::Array{String,1})
     new_names = Array{String,1}() # sequence names
     new_repr_n = Array{Int32,1}() 
     ct = 0
@@ -131,7 +208,7 @@ function sub_alignment!(aln::Alignment, names::Array{String,1})
  end
 
 #sub alignment  - leaves on rows based on iondex
-function sub_alignment_rowwise!(aln::Alignment, rows::Array{Int64,1})
+function sub_alignment_rowwise!(aln::Union{Alignment, Alignmentprot}, rows::Array{Int64,1})
     aln.names = aln.names[rows]
     aln.repr_n = aln.repr_n[rows]
     aln.M = aln.M[rows,:]
@@ -143,12 +220,12 @@ function sub_alignment_rowwise!(aln::Alignment, rows::Array{Int64,1})
 end
 
 #sub alignment  - column slice
-function sub_alignment_columnwise!(aln::Alignment, columns::Array{Int64,1})
+function sub_alignment_columnwise!(aln::Union{Alignment, Alignmentprot}, columns::Array{Int64,1})
     aln.M=aln.M[:,columns]
 end
 
 
-function write_to_fasta(aln::Alignment, out_f_name::String;write_sizes = false)
+function write_to_fasta(aln::Union{Alignment, Alignmentprot}, out_f_name::String;write_sizes = false)
     f = GZip.open(out_f_name,"w")
     for i in 1:size(aln.M, 1)
         n = aln.names[i]
@@ -164,7 +241,7 @@ function write_to_fasta(aln::Alignment, out_f_name::String;write_sizes = false)
     close(f)
 end
 
-function write_to_fasta(aln::Alignment, interval::UnitRange{Int64}, out_f_name::String;remove_gaps=false)
+function write_to_fasta(aln::Union{Alignment, Alignmentprot}, interval::UnitRange{Int64}, out_f_name::String;remove_gaps=false)
     f = open(out_f_name, "w")
     for i in 1:size(aln.M, 1)
         n = aln.names[i]
@@ -207,12 +284,61 @@ function get_statistics_on_Gaps_Ns_collumnwise(aln::Alignment)
     return(outd)
 end
 
+function get_statistics_on_Gaps_Ns_collumnwise(aln::Alignmentprot)
+    m = aln.M
+    set_dna = [AA_X,AA_Gap]
+    out = Array{Array{Int64},1}()
+    ctparse = 0
+    for clm in eachcol(m)
+        cm = countmap(clm)
+        N = length(clm)
+        cmvals =  map( (x) -> x in keys(cm) ? cm[x] : 0, set_dna)
+        push!(cmvals,N)
+        push!(out,cmvals)
+        ctparse += 1
+        if mod(ctparse,1000) == 0
+            print("Counted $ctparse columns\r")
+        end
+    end
+    println("Doing transposition...")
+    outm = transpose(hcat(out...))
+    println("Done. Converting to a data frame...")
+    outd = DataFrame(outm,[:N,:Gap,:Total])
+    outd.Position = 1:length(outm[:,1])
+    println("Done")
+    return(outd)
+end
 """
     Collect data on Gaps and Ns abundance rowwise
 """
 function get_statistics_on_Gaps_Ns_rowwise(aln::Alignment)
     m = aln.M
     set_dna = [DNA_N,DNA_Gap]
+    out = Array{Array{Int64},1}()
+    ctparse = 0
+    for clm in eachrow(m)
+        cm = countmap(clm)
+        N = length(clm)
+        cmvals =  map( (x) -> x in keys(cm) ? cm[x] : 0, set_dna)
+        push!(cmvals,N)
+        push!(out,cmvals)
+        ctparse += 1
+        if mod(ctparse,1000) == 0
+            print("Counted $ctparse rows\r")
+        end
+    end
+    println("Doing transposition...")
+    outm = transpose(hcat(out...))
+    println("Done. Converting to a data frame...")
+    outd = DataFrame(outm,[:N,:Gap,:Total])
+    outd.ID = aln.names
+    outd.NR = 1:length(aln.names)
+    return(outd)
+end
+
+function get_statistics_on_Gaps_Ns_rowwise(aln::Alignmentprot)
+    m = aln.M
+    set_dna = [AA_X,AA_Gap]
     out = Array{Array{Int64},1}()
     ctparse = 0
     for clm in eachrow(m)
@@ -311,11 +437,11 @@ function get_clustering(ucinfile::String)
     return(out)
 end
 
-function char_array_entropy(s::String;debug=false)
-    return char_array_entropy(collect(s), debug=debug)
+function char_array_entropy(s::String;debug=false, ignore::Array{Char,1}=['N'])
+    return char_array_entropy(collect(s), debug=debug, ignore = ignore)
 end
 
-function char_array_entropy(s::Array{Char,1}, c::Array{Int,1};debug=false)
+function char_array_entropy(s::Array{Char,1}, c::Array{Int,1};debug=false, ignore::Array{Char,1}=['N'])
     if length(s) != length(c)
         error("Number of symbols and their counts do not match")
     end
@@ -327,17 +453,24 @@ function char_array_entropy(s::Array{Char,1}, c::Array{Int,1};debug=false)
             push!(chars, cc)
         end 
     end
-    return(char_array_entropy(chars, debug=debug))
+    return(char_array_entropy(chars, debug=debug,ignore=ignore))
 end
 
-function char_array_entropy(s::Array{Char,1};debug=false)
-    c = counter(s)
-    n = length(s)
+function char_array_entropy(s::Array{Char,1};debug=false, ignore::Array{Char,1}=['N'])
+    s_woignore = Array{Char,1}()
+    for sm in s
+        if !(sm in ignore)
+            push!(s_woignore, sm)
+        end 
+    end
+    c = counter(s_woignore)
+    n = length(s_woignore)
+
     e=0
     consensus = ' '
     for k in keys(c)
-    p = c[k]/n
-    e += -1*p*log2(p)
+        p = c[k]/n
+        e += -1*p*log2(p)
     end
     frac_gap = c['-']/n
     if debug
@@ -349,7 +482,7 @@ function char_array_entropy(s::Array{Char,1};debug=false)
     return(e, frac_gap, pvals, consensus[1][1])
 end
 
-function aln_conservation(aln::Alignment; ignore_amounts = false)
+function aln_conservation(aln::Union{Alignment, Alignmentprot}; ignore_amounts = false, ignore::Array{Char,1}=['N'])
     entropies = Array{Float64,1}()
     conservation = Array{Float64,1}()
     sz = size(aln.M)
@@ -357,9 +490,9 @@ function aln_conservation(aln::Alignment; ignore_amounts = false)
         chars = collect(join(aln.M[:,i]))
         cnts = aln.repr_n
         if ignore_amounts 
-            entr = char_array_entropy(chars)
+            entr = char_array_entropy(chars, ignore = ignore)
         else 
-            entr = char_array_entropy(chars, Array{Int64,1}(cnts))
+            entr = char_array_entropy(chars, Array{Int64,1}(cnts), ignore = ignore)
         end 
         push!(entropies,entr[1])
         push!(conservation,entr[3])

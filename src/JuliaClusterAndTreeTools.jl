@@ -20,6 +20,7 @@ module JuliaClusterAndTreeTools
 
     #Alignment analysis stuff 
     export Alignment
+    export Alignmentprot
     export read_fasta
     export write_to_fasta
     export sub_alignment

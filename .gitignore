@@ -12,3 +12,4 @@ notebooks/.ipynb_checkpoints
 .ipynb_checkpoints
 notebooks/my-out.fasta
 test/playdata/test500out.fasta
+test/playdata/proteinaln_conservation_all.csv
