@@ -2,7 +2,18 @@
 
 julia_version = "1.8.3"
 manifest_format = "2.0"
-project_hash = "9bab26869a62567f417dfaa27b2f73e8745a3ac2"
+project_hash = "243f3b8829daa0809de6eef50670687bbc3e4328"
+
+[[deps.AbstractTrees]]
+git-tree-sha1 = "03e0550477d86222521d254b741d470ba17ea0b5"
+uuid = "1520ce14-60c1-5f80-bbc7-55ef81b5835c"
+version = "0.3.4"
+
+[[deps.ArgMacros]]
+deps = ["TextWrap"]
+git-tree-sha1 = "d56b520cf879f431c0164fd05197efcf754e13bb"
+uuid = "dbc42088-9de8-42a0-8ec8-2cd114e1ea3e"
+version = "0.2.4"
 
 [[deps.ArgParse]]
 deps = ["Logging", "TextWrap"]
@@ -592,6 +603,12 @@ version = "0.4.13"
 uuid = "ca575930-c2e3-43a9-ace4-1e988b2c1908"
 version = "1.2.0"
 
+[[deps.NewickTree]]
+deps = ["AbstractTrees", "RecipesBase", "Test"]
+git-tree-sha1 = "cc3b6d7ae9f689c93a079626236fe2858b473313"
+uuid = "b0a14db8-6308-4ebc-8917-f72cd81f5094"
+version = "0.3.0"
+
 [[deps.OpenBLAS_jll]]
 deps = ["Artifacts", "CompilerSupportLibraries_jll", "Libdl"]
 uuid = "4536629a-c528-5b80-bd46-f80d51c5b363"
@@ -740,6 +757,12 @@ deps = ["BioSequences", "FASTX"]
 git-tree-sha1 = "72f9df4854d3ee73097ce9f89871557848692541"
 uuid = "70a005b8-9d8a-11e9-0d98-c909fa2e52d2"
 version = "0.4.0"
+
+[[deps.RecipesBase]]
+deps = ["SnoopPrecompile"]
+git-tree-sha1 = "261dddd3b862bd2c940cf6ca4d1c8fe593e457c8"
+uuid = "3cdcf5f2-1ef4-517c-9805-6587b60abb01"
+version = "1.3.3"
 
 [[deps.Reexport]]
 git-tree-sha1 = "45e428421666073eab6f2da5c9d310d99bb12f9b"

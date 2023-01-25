@@ -56,7 +56,7 @@ mutable struct Alignmentprot
                 end
                 seq_str = join(seq_ar)
                 num += 1
-                if mod(num, 1000) == 0
+                if mod(num, 10000) == 0
                     print(stderr,"Parsed $num sequences \r")
                 end
                 push!(names, n)
@@ -133,7 +133,7 @@ mutable struct Alignment
                 end
                 seq_str = join(seq_ar)
                 num += 1
-                if mod(num, 1000) == 0
+                if mod(num, 10000) == 0
                     print(stderr,"Parsed $num sequences \r")
                 end
                 push!(names, n)
