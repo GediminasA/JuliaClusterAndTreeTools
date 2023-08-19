@@ -2,7 +2,7 @@
 
 julia_version = "1.9.2"
 manifest_format = "2.0"
-project_hash = "8e32a66b2b035eb3d8a678e96eb62b871012be76"
+project_hash = "dfe19732fc5549976b088c3ff3412ba51cc1700a"
 
 [[deps.AbstractTrees]]
 git-tree-sha1 = "03e0550477d86222521d254b741d470ba17ea0b5"
@@ -392,6 +392,12 @@ deps = ["Base64", "Conda", "Dates", "InteractiveUtils", "JSON", "Libdl", "Loggin
 git-tree-sha1 = "47ac8cc196b81001a711f4b2c12c97372338f00c"
 uuid = "7073ff75-c697-5162-941a-fcdaad2a7d2a"
 version = "1.24.2"
+
+[[deps.InMemoryDatasets]]
+deps = ["Compat", "DataAPI", "Dates", "InvertedIndices", "IteratorInterfaceExtensions", "Markdown", "Missings", "PooledArrays", "PrettyTables", "Printf", "REPL", "Reexport", "Statistics", "TableTraits", "Tables"]
+git-tree-sha1 = "1951969da180e213c65f7c211ed245217750a224"
+uuid = "5c01b14b-ab03-46ff-b164-14c663efdd9f"
+version = "0.7.18"
 
 [[deps.IndexableBitVectors]]
 deps = ["Random", "Test"]
